@@ -155,3 +155,4 @@ build/
 # Package manager lock files (choose one to keep)
 # package-lock.json
 # yarn.lock
+.vercel

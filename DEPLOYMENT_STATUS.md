@@ -35,12 +35,13 @@
 
 ## 🚀 CURRENT STATUS
 
-### Live Site: https://al-hikmah.vercel.app
+### Live Site: https://al-hikmah-z227.vercel.app
 - ✅ **Main page loads successfully** (Status: 200)
 - ✅ **Static files served correctly**
 - ✅ **Frontend application loads**
 - ✅ **Uses direct Quran API for data**
 - ✅ **Responsive design works**
+- ✅ **Deployed to your own Vercel account**
 
 ### Production Configuration
 - **Frontend**: Uses external AlQuran.cloud API directly
@@ -94,4 +95,9 @@ The Al-Hikmah Academy Quran web app is now **FULLY FUNCTIONAL** on the live Verc
 
 The app successfully handles the transition from local development to production environment with automatic API endpoint switching and robust error handling.
 
-**Live Site**: https://al-hikmah.vercel.app ✅ WORKING
+**Live Site**: https://al-hikmah-z227.vercel.app ✅ WORKING
+
+### 🔗 Your Vercel Project URLs:
+- **Production**: https://al-hikmah-z227.vercel.app
+- **Vercel Dashboard**: https://vercel.com/mojahids-projects/al-hikmah-z227
+- **GitHub Repository**: https://github.com/Mojahidcoders/Al-Hikmah
