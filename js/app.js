@@ -29,14 +29,15 @@ class QuranApp {
                 health: `${this.baseURL}/api/health`
             };
         } else {
-            // Production - use external APIs directly
+            // Production - use Vercel backend
+            this.baseURL = 'https://al-hikmah-9v7m.vercel.app';
             this.apiEndpoints = {
-                surahs: 'https://api.alquran.cloud/v1/meta',
-                arabic: (number) => `https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`,
-                english: (number) => `https://api.alquran.cloud/v1/surah/${number}/en.asad`,
-                urdu: (number) => `https://api.alquran.cloud/v1/surah/${number}/ur.jalandhry`,
-                audio: (ayahNumber) => `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber}.mp3`,
-                health: 'https://api.alquran.cloud/v1/meta'
+                surahs: `${this.baseURL}/api/surahs`,
+                arabic: (number) => `${this.baseURL}/api/surah?number=${number}&language=arabic`,
+                english: (number) => `${this.baseURL}/api/surah?number=${number}&language=english`,
+                urdu: (number) => `${this.baseURL}/api/surah?number=${number}&language=urdu`,
+                audio: (ayahNumber) => `${this.baseURL}/api/audio?ayahNumber=${ayahNumber}`,
+                health: `${this.baseURL}/api/health`
             };
         }
         
