@@ -141,6 +141,8 @@ class QuranApp {
         try {
             this.showLoading('Loading Surah list...');
             
+            console.log('🔗 Fetching Surah list from:', this.apiEndpoints.surahs);
+            
             const response = await fetch(this.apiEndpoints.surahs, {
                 method: 'GET',
                 headers: {
@@ -149,25 +151,41 @@ class QuranApp {
                 }
             });
             
-            if (!response.ok) throw new Error('Failed to fetch Surah list');
+            console.log('📡 Response status:', response.status, response.statusText);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Response error:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
             
             const data = await response.json();
+            console.log('✅ Surah data received:', data);
+            
             const surahSelect = document.getElementById('surah-select');
             
             // Clear existing options except the first one
             surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
             
-            data.data.surahs.references.forEach(surah => {
-                const option = document.createElement('option');
-                option.value = surah.number;
-                option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
-                surahSelect.appendChild(option);
-            });
+            if (data && data.data && data.data.surahs && data.data.surahs.references) {
+                data.data.surahs.references.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah.number;
+                    option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
+                    surahSelect.appendChild(option);
+                });
+                console.log(`✅ Loaded ${data.data.surahs.references.length} Surahs`);
+            } else {
+                throw new Error('Invalid data structure received from API');
+            }
             
             this.hideLoading();
         } catch (error) {
-            console.error('Error loading Surah list:', error);
-            this.showError('Failed to load Surah list. Please check your internet connection and try again.', () => {
+            console.error('❌ Error loading Surah list:', error);
+            const errorMessage = `Failed to load Surah list: ${error.message}. 
+                                  API endpoint: ${this.apiEndpoints.surahs}
+                                  Environment: ${window.location.hostname === 'localhost' ? 'Local' : 'Production'}`;
+            this.showError(errorMessage, () => {
                 this.loadSurahList();
             });
         }
