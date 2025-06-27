@@ -331,9 +331,9 @@ class QuranApp {
                 this.updatePlayButton(true);
                 
             } else if (type === 'translation') {
-                // For translation audio, we would need a translation audio API
-                // This is a placeholder implementation
-                this.showMessage('Translation audio feature coming soon!');
+                // Translation audio implementation
+                // Using text-to-speech for translation audio since dedicated translation audio APIs are limited
+                await this.playTranslationAudio(verse, verseIndex);
             }
             
         } catch (error) {

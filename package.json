@@ -7,7 +7,8 @@
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
     "install-deps": "npm install",
-    "build": "echo 'No build step required for this project'",
+    "build": "node build.js",
+    "vercel-build": "node build.js",
     "test": "node test-installation.js",
     "verify": "node test-installation.js"
   },
