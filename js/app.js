@@ -5,15 +5,7 @@ class QuranApp {
         this.currentTranslationMode = 'arabic';
         this.verses = [];
         this.isPlaying = false;
-        this            this.verses = this.currentSurah.arabic.ayahs.map((ayah, index) => ({
-                number: ayah.numberInSurah,
-                arabic: ayah.text,
-                english: this.currentSurah.english.ayahs[index]?.text || 'Translation not available',
-                urdu: this.currentSurah.urdu.ayahs[index]?.text || 'اردو ترجمہ دستیاب نہیں',
-                audioUrl: typeof this.apiEndpoints.audio === 'function' 
-                    ? this.apiEndpoints.audio(ayah.number) 
-                    : this.apiEndpoints.audio.replace('${ayahNumber}', ayah.number)
-            }));tPlayingVerse = null;
+        this.currentPlayingVerse = null;
         this.audioQueue = [];
         this.currentAudioIndex = 0;
         
@@ -175,16 +167,32 @@ class QuranApp {
             // Clear existing options except the first one
             surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
             
+            // Handle direct API response format
+            let surahs;
             if (data && data.data && data.data.surahs && data.data.surahs.references) {
-                data.data.surahs.references.forEach(surah => {
+                // Our API format
+                surahs = data.data.surahs.references;
+            } else if (data && data.data && Array.isArray(data.data)) {
+                // Direct AlQuran.cloud API format
+                surahs = data.data.map(surah => ({
+                    number: surah.number,
+                    name: surah.name,
+                    englishName: surah.englishName
+                }));
+            } else {
+                throw new Error('Invalid data structure received from API');
+            }
+            
+            if (surahs && surahs.length > 0) {
+                surahs.forEach(surah => {
                     const option = document.createElement('option');
                     option.value = surah.number;
                     option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
                     surahSelect.appendChild(option);
                 });
-                console.log(`✅ Loaded ${data.data.surahs.references.length} Surahs`);
+                console.log(`✅ Loaded ${surahs.length} Surahs`);
             } else {
-                throw new Error('Invalid data structure received from API');
+                throw new Error('No Surahs found in API response');
             }
             
             this.hideLoading();
