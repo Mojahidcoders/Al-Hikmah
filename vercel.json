@@ -2,11 +2,6 @@
   "version": 2,
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "public",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node@18.19.0"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
