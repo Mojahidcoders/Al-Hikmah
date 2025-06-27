@@ -51,6 +51,29 @@ if exist ".git" (
     echo Git repository already exists.
     echo Current status:
     git status --short
+    
+    REM Check if origin remote exists
+    git remote get-url origin >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo.
+        echo Current origin remote:
+        git remote get-url origin
+        echo.
+        set /p update_remote="Do you want to update the origin remote? (y/n): "
+        if /i "!update_remote!"=="y" (
+            set /p new_remote="Enter new GitHub repository URL: "
+            git remote set-url origin !new_remote!
+            echo Origin remote updated successfully!
+        )
+    ) else (
+        echo No origin remote found.
+        set /p add_remote="Do you want to add GitHub origin remote? (y/n): "
+        if /i "!add_remote!"=="y" (
+            set /p new_remote="Enter GitHub repository URL: "
+            git remote add origin !new_remote!
+            echo Origin remote added successfully!
+        )
+    )
 ) else (
     echo Initializing Git repository...
     git init
@@ -72,17 +95,40 @@ if exist ".git" (
 بسم الله - In the name of Allah"
 
     echo.
+    echo Repository initialized! Now adding GitHub remote...
+    set /p add_remote="Do you want to add GitHub origin remote now? (y/n): "
+    if /i "!add_remote!"=="y" (
+        set /p new_remote="Enter GitHub repository URL: "
+        git remote add origin !new_remote!
+        echo Origin remote added successfully!
+        
+        echo Setting main branch and pushing...
+        git branch -M main
+        set /p push_now="Push to GitHub now? (y/n): "
+        if /i "!push_now!"=="y" (
+            git push -u origin main
+            if %errorlevel% equ 0 (
+                echo ✅ Successfully pushed to GitHub!
+            ) else (
+                echo ❌ Push failed. Please check your repository URL and permissions.
+            )
+        )
+    )
+    
+    echo.
     echo ====================================
     echo Git repository initialized!
     echo ====================================
 )
 
 echo.
-echo To connect to GitHub repository:
+echo Git repository setup complete!
+echo.
+echo Manual GitHub setup (if needed):
 echo 1. Create a new repository on GitHub
-echo 2. Run: git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
-echo 3. Run: git branch -M main
-echo 4. Run: git push -u origin main
+echo 2. If origin doesn't exist: git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+echo 3. If origin exists: git remote set-url origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+echo 4. Push: git push -u origin main
 echo.
 echo To start the application:
 echo Run: npm start

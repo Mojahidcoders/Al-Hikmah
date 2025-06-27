@@ -197,6 +197,48 @@ git tag -a v1.0.0 -m "🕌 Al-Hikmah Academy Quran v1.0.0
 git push origin v1.0.0
 ```
 
+### 7. Troubleshooting Git Issues
+
+#### Common Error: "remote origin already exists"
+If you encounter this error, use our troubleshooting scripts:
+
+**Windows:**
+```bash
+# Run the Git troubleshooting helper
+./git-fix.bat
+```
+
+**Linux/Mac:**
+```bash
+# Run the Git troubleshooting helper
+./git-fix.sh
+```
+
+#### Manual Fix for Remote Origin Issues:
+```bash
+# Check current remotes
+git remote -v
+
+# If origin exists but is wrong, update it:
+git remote set-url origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+
+# If no origin exists, add it:
+git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+
+# If origin exists but you want to remove it:
+git remote remove origin
+# Then add the correct one:
+git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+```
+
+#### Force Push (use with caution):
+```bash
+# If you need to overwrite remote repository
+git push -u origin main --force
+```
+
+**⚠️ Warning:** Force push will overwrite the remote repository. Only use this if you're sure about the consequences.
+
 ## 🎯 How to Use
 
 ### 1. Select a Surah
