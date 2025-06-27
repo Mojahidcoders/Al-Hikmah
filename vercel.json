@@ -2,7 +2,13 @@
   "version": 2,
   "functions": {
     "api/*.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node@18.19.0"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
 }
