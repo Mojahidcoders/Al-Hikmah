@@ -344,62 +344,51 @@ class QuranApp {
 
     async loadSurahList() {
         try {
-            this.showLoading('Loading Surah list...');
-            
-            // Always use static data for maximum reliability
-            console.log('🔧 Using static Surah data for maximum reliability');
-            const data = this.getStaticSurahData();
+            // Surah list is pre-populated in HTML for maximum reliability
+            console.log('✅ Surah list already available in HTML - no loading needed');
             
             const surahSelect = document.getElementById('surah-select');
             if (!surahSelect) {
                 throw new Error('Surah select element not found');
             }
             
-            // Clear existing options
-            surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
+            // Check if options are already loaded (should be 115 total: 1 default + 114 surahs)
+            const optionCount = surahSelect.options.length;
+            console.log(`✅ Found ${optionCount} options in Surah dropdown`);
             
-            // Get surahs from static data
-            const surahs = data.data.surahs.references;
+            if (optionCount >= 114) {
+                console.log('✅ All Surahs are available and ready to use');
+                this.hideLoading();
+                return;
+            } else {
+                console.log('⚠️ Not all Surahs found, using JavaScript fallback');
+                // Fallback to populate via JavaScript if HTML is missing
+                throw new Error('HTML Surah list incomplete');
+            }
             
-            if (surahs && surahs.length > 0) {
+        } catch (error) {
+            console.error('❌ Error with Surah list:', error);
+            
+            // Emergency fallback: create basic surah list manually
+            console.log('🚨 Using emergency JavaScript fallback');
+            const surahSelect = document.getElementById('surah-select');
+            if (surahSelect) {
+                // Get static data and populate
+                const data = this.getStaticSurahData();
+                surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
+                
+                const surahs = data.data.surahs.references;
                 surahs.forEach(surah => {
                     const option = document.createElement('option');
                     option.value = surah.number;
                     option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
                     surahSelect.appendChild(option);
                 });
-                console.log(`✅ Successfully loaded ${surahs.length} Surahs from static data`);
-            } else {
-                throw new Error('No Surahs found in static data');
+                console.log(`✅ Emergency fallback loaded ${surahs.length} Surahs`);
             }
-            
-            this.hideLoading();
-        } catch (error) {
-            console.error('❌ Error loading Surah list:', error);
-            
-            // Emergency fallback: create basic surah list manually
-            console.log('🚨 Using emergency fallback Surah list');
-            const surahSelect = document.getElementById('surah-select');
-            if (surahSelect) {
-                surahSelect.innerHTML = `
-                    <option value="">Choose a Surah...</option>
-                    <option value="1">1. الفاتحة - Al-Fatiha</option>
-                    <option value="2">2. البقرة - Al-Baqarah</option>
-                    <option value="3">3. آل عمران - Ali 'Imran</option>
-                    <option value="4">4. النساء - An-Nisa</option>
-                    <option value="5">5. المائدة - Al-Ma'idah</option>
-                    <option value="18">18. الكهف - Al-Kahf</option>
-                    <option value="36">36. يس - Ya-Sin</option>
-                    <option value="55">55. الرحمن - Ar-Rahman</option>
-                    <option value="67">67. الملك - Al-Mulk</option>
-                    <option value="112">112. الإخلاص - Al-Ikhlas</option>
-                `;
-                console.log('✅ Emergency fallback Surah list loaded');
-            }
-            
-            this.hideLoading();
-            this.showError('Surah list loaded with basic options. Full list may be unavailable.', null);
         }
+        
+        this.hideLoading();
     }
 
     async loadSurah(surahNumber) {
