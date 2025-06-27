@@ -270,7 +270,8 @@ class QuranApp {
                     <button class="verse-audio-btn play-arabic" data-verse="${index}" title="Play Arabic">
                         <i class="fas fa-play"></i>
                     </button>
-                    <button class="verse-audio-btn play-translation" data-verse="${index}" title="Play Translation" style="display: none;">
+                    <button class="verse-audio-btn play-translation" data-verse="${index}" title="Play Translation" 
+                            style="display: ${this.currentTranslationMode === 'arabic' ? 'none' : 'inline-block'};">
                         <i class="fas fa-volume-up"></i>
                     </button>
                 </div>
@@ -389,6 +390,11 @@ class QuranApp {
         this.translationAudio.pause();
         this.translationAudio.currentTime = 0;
         
+        // Stop speech synthesis if active
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        
         this.isPlaying = false;
         this.currentPlayingVerse = null;
         this.audioQueue = [];
@@ -414,10 +420,11 @@ class QuranApp {
         });
     }
 
-    updateNowPlaying(verseIndex) {
+    updateNowPlaying(verseIndex, type = 'arabic') {
         const verse = this.verses[verseIndex];
+        const audioType = type === 'translation' ? 'Translation' : 'Arabic';
         document.getElementById('now-playing-text').textContent = 
-            `Now Playing: Verse ${verse.number}`;
+            `Now Playing: Verse ${verse.number} (${audioType})`;
     }
 
     updatePlayButton(isPlaying) {
@@ -534,6 +541,67 @@ class QuranApp {
                 document.body.removeChild(toast);
             }, 300);
         }, 3000);
+    }
+
+    async playTranslationAudio(verse, verseIndex) {
+        try {
+            // Get translation text based on current mode
+            const translationText = this.currentTranslationMode === 'english' ? verse.english : verse.urdu;
+            
+            // Check if Web Speech API is supported
+            if ('speechSynthesis' in window) {
+                // Stop any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Create speech synthesis utterance
+                const utterance = new SpeechSynthesisUtterance(translationText);
+                
+                // Configure voice settings based on translation mode
+                if (this.currentTranslationMode === 'english') {
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.8;
+                } else if (this.currentTranslationMode === 'urdu') {
+                    utterance.lang = 'ur-PK';
+                    utterance.rate = 0.7;
+                }
+                
+                utterance.volume = 0.8;
+                utterance.pitch = 1.0;
+                
+                // Update UI
+                this.highlightVerse(verseIndex);
+                this.updateNowPlaying(verseIndex, 'translation');
+                this.showGlobalPlayer();
+                
+                // Set up event handlers
+                utterance.onstart = () => {
+                    this.isPlaying = true;
+                    this.currentPlayingVerse = verseIndex;
+                    this.updatePlayButton(true);
+                };
+                
+                utterance.onend = () => {
+                    this.onAudioEnded();
+                };
+                
+                utterance.onerror = (error) => {
+                    console.error('Speech synthesis error:', error);
+                    this.showMessage('Translation audio error. Please try again.', 'error');
+                    this.stopAllAudio();
+                };
+                
+                // Start speech synthesis
+                window.speechSynthesis.speak(utterance);
+                
+            } else {
+                // Fallback: Show message if Web Speech API is not supported
+                this.showMessage('Translation audio is not supported in this browser. Please try using Chrome, Firefox, or Safari.', 'error');
+            }
+            
+        } catch (error) {
+            console.error('Translation audio error:', error);
+            this.showMessage('Translation audio feature encountered an error.', 'error');
+        }
     }
 }
 
