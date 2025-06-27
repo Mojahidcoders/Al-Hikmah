@@ -367,10 +367,10 @@ class QuranApp {
             // Clear existing options except the first one
             surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
             
-            // Handle direct API response format
+            // Handle different data formats
             let surahs;
-            if (this.isLocal && data && data.data && data.data.surahs && data.data.surahs.references) {
-                // Local API format
+            if (data && data.data && data.data.surahs && data.data.surahs.references) {
+                // Static data format (both local and production when using static)
                 surahs = data.data.surahs.references;
             } else if (data && data.data && Array.isArray(data.data)) {
                 // Direct AlQuran.cloud API format
@@ -398,9 +398,11 @@ class QuranApp {
             this.hideLoading();
         } catch (error) {
             console.error('❌ Error loading Surah list:', error);
+            const environment = window.location.hostname === 'localhost' ? 'Local' : 'Production';
+            const dataSource = !this.isLocal ? 'Static Data' : `API endpoint: ${this.apiEndpoints.surahs}`;
             const errorMessage = `Failed to load Surah list: ${error.message}. 
-                                  API endpoint: ${this.apiEndpoints.surahs}
-                                  Environment: ${window.location.hostname === 'localhost' ? 'Local' : 'Production'}`;
+                                  Data source: ${dataSource}
+                                  Environment: ${environment}`;
             this.showError(errorMessage, () => {
                 this.loadSurahList();
             });
