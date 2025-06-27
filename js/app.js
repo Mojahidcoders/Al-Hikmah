@@ -14,21 +14,63 @@ class QuranApp {
         this.translationAudio = document.getElementById('translation-audio');
         
         // API Configuration
-        this.baseURL = window.location.origin;
-        this.apiEndpoints = {
-            surahs: `${this.baseURL}/api/surahs`,
-            arabic: (number) => `${this.baseURL}/api/surah/${number}/arabic`,
-            english: (number) => `${this.baseURL}/api/surah/${number}/english`,
-            urdu: (number) => `${this.baseURL}/api/surah/${number}/urdu`,
-            audio: (ayahNumber) => `${this.baseURL}/api/audio/${ayahNumber}`,
-            health: `${this.baseURL}/api/health`
-        };
+        // Check if we're running locally or on Netlify
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        if (isLocal) {
+            // Local development - use backend server
+            this.baseURL = window.location.origin;
+            this.apiEndpoints = {
+                surahs: `${this.baseURL}/api/surahs`,
+                arabic: (number) => `${this.baseURL}/api/surah/${number}/arabic`,
+                english: (number) => `${this.baseURL}/api/surah/${number}/english`,
+                urdu: (number) => `${this.baseURL}/api/surah/${number}/urdu`,
+                audio: (ayahNumber) => `${this.baseURL}/api/audio/${ayahNumber}`,
+                health: `${this.baseURL}/api/health`
+            };
+        } else {
+            // Production - use external APIs directly
+            this.apiEndpoints = {
+                surahs: 'https://api.alquran.cloud/v1/meta',
+                arabic: (number) => `https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`,
+                english: (number) => `https://api.alquran.cloud/v1/surah/${number}/en.asad`,
+                urdu: (number) => `https://api.alquran.cloud/v1/surah/${number}/ur.jalandhry`,
+                audio: (ayahNumber) => `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber}.mp3`,
+                health: 'https://api.alquran.cloud/v1/meta'
+            };
+        }
         
         this.init();
     }
 
     async init() {
         this.setupEventListeners();
+        
+        // Add environment indicator
+        const envIndicator = document.createElement('div');
+        envIndicator.id = 'env-indicator';
+        envIndicator.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(46, 125, 50, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10000;
+            font-family: monospace;
+        `;
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        envIndicator.textContent = isLocal ? 'Local Dev' : 'Production';
+        document.body.appendChild(envIndicator);
+        
+        // Log API endpoints for debugging
+        console.log('🕌 Al-Hikmah Academy - Quran Section');
+        console.log('Environment:', isLocal ? 'Local Development' : 'Production');
+        console.log('API Endpoints:', this.apiEndpoints);
+        
         await this.loadSurahList();
         this.showSection('controls');
     }
@@ -98,7 +140,14 @@ class QuranApp {
         try {
             this.showLoading('Loading Surah list...');
             
-            const response = await fetch(this.apiEndpoints.surahs);
+            const response = await fetch(this.apiEndpoints.surahs, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
             if (!response.ok) throw new Error('Failed to fetch Surah list');
             
             const data = await response.json();
@@ -116,7 +165,8 @@ class QuranApp {
             
             this.hideLoading();
         } catch (error) {
-            this.showError('Failed to load Surah list. Please check your internet connection.', () => {
+            console.error('Error loading Surah list:', error);
+            this.showError('Failed to load Surah list. Please check your internet connection and try again.', () => {
                 this.loadSurahList();
             });
         }
@@ -127,20 +177,32 @@ class QuranApp {
             this.showLoading(`Loading Surah ${surahNumber}...`);
             this.stopAllAudio();
             
-            // Load Arabic text
-            const arabicResponse = await fetch(this.apiEndpoints.arabic(surahNumber));
-            if (!arabicResponse.ok) throw new Error('Failed to fetch Arabic text');
-            const arabicData = await arabicResponse.json();
+            // Fetch with proper headers and error handling
+            const fetchWithRetry = async (url, retries = 3) => {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        return await response.json();
+                    } catch (error) {
+                        if (i === retries - 1) throw error;
+                        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Progressive delay
+                    }
+                }
+            };
             
-            // Load English translation
-            const englishResponse = await fetch(this.apiEndpoints.english(surahNumber));
-            if (!englishResponse.ok) throw new Error('Failed to fetch English translation');
-            const englishData = await englishResponse.json();
-            
-            // Load Urdu translation
-            const urduResponse = await fetch(this.apiEndpoints.urdu(surahNumber));
-            if (!urduResponse.ok) throw new Error('Failed to fetch Urdu translation');
-            const urduData = await urduResponse.json();
+            // Load Arabic text, English translation, and Urdu translation in parallel
+            const [arabicData, englishData, urduData] = await Promise.all([
+                fetchWithRetry(this.apiEndpoints.arabic(surahNumber)),
+                fetchWithRetry(this.apiEndpoints.english(surahNumber)),
+                fetchWithRetry(this.apiEndpoints.urdu(surahNumber))
+            ]);
             
             this.currentSurah = {
                 number: surahNumber,
@@ -165,7 +227,8 @@ class QuranApp {
             document.getElementById('play-all-btn').disabled = false;
             
         } catch (error) {
-            this.showError(`Failed to load Surah ${surahNumber}. Please try again.`, () => {
+            console.error('Error loading Surah:', error);
+            this.showError(`Failed to load Surah ${surahNumber}. Please check your internet connection and try again.`, () => {
                 this.loadSurah(surahNumber);
             });
         }
