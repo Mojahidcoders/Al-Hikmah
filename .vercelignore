@@ -1,0 +1,37 @@
+# Vercel ignore file - files and directories to exclude from deployment
+
+# Development files
+node_modules
+.git
+.vscode
+server
+
+# Build and cache
+.npm
+.cache
+npm-debug.log*
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Documentation and setup files
+README.md
+CONTRIBUTING.md
+LICENSE
+DEPLOYMENT.md
+setup.bat
+setup.sh
+setup-github.bat
+git-fix.bat
+git-fix.sh
+test-installation.js
+
+# Netlify specific files
+_headers
+_redirects
+netlify.toml
+
+# Development scripts
+build.js
