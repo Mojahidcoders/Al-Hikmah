@@ -1,0 +1,179 @@
+name: 🌟 Feature Request
+description: Suggest a new feature for the Al-Hikmah Academy Quran section
+title: "[FEATURE]: "
+labels: ["enhancement", "feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🕌 Assalamu Alaikum!
+        
+        Thank you for suggesting a new feature for the Al-Hikmah Academy Quran section. Your ideas help us improve this Islamic educational resource.
+        
+        **بإذن الله** - With Allah's permission, let's make this project even better!
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: Feature Summary
+      description: Provide a brief summary of the feature you're requesting
+      placeholder: A clear and concise description of the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What need does it address?
+      placeholder: This feature would help users by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution in detail
+      placeholder: The feature should work like this...
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories
+      description: Describe how users would interact with this feature
+      placeholder: |
+        As a [type of user], I want [functionality] so that [benefit].
+        
+        Example:
+        - As a Quran student, I want to bookmark verses so that I can easily return to them later
+        - As a teacher, I want to create custom playlists so that I can organize lessons
+    validations:
+      required: false
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: Which category does this feature belong to?
+      options:
+        - Audio & Recitation 🔊
+        - Translation & Languages 🌍
+        - User Interface 🎨
+        - Navigation & Search 🔍
+        - Educational Tools 📚
+        - Accessibility ♿
+        - Performance ⚡
+        - Mobile Experience 📱
+        - Offline Functionality 💾
+        - Personalization 👤
+        - Islamic Features 🕌
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve user experience
+        - High - Essential for better functionality
+        - Critical - Addresses major user need
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative approaches or workarounds?
+      placeholder: Alternative approaches could be...
+    validations:
+      required: false
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: Implementation Ideas
+      description: Do you have any technical suggestions for how this could be implemented?
+      placeholder: This could be implemented using...
+    validations:
+      required: false
+
+  - type: textarea
+    id: islamic-considerations
+    attributes:
+      label: Islamic Considerations
+      description: Are there any Islamic principles or guidelines that should be considered for this feature?
+      placeholder: From an Islamic perspective, this feature should...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: target-users
+    attributes:
+      label: Target Users
+      description: Who would benefit from this feature? (Select all that apply)
+      options:
+        - label: General Muslim users
+        - label: Quran students/learners
+        - label: Islamic teachers/scholars
+        - label: Non-Arabic speakers
+        - label: Visually impaired users
+        - label: Mobile users
+        - label: Offline users
+        - label: Children/young learners
+
+  - type: textarea
+    id: mockups-references
+    attributes:
+      label: Mockups or References
+      description: Do you have any mockups, screenshots, or references from other applications?
+      placeholder: You can attach images or provide links to similar implementations...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution Interest
+      description: Would you be interested in contributing to this feature?
+      options:
+        - label: I would like to help implement this feature
+        - label: I can provide testing and feedback
+        - label: I can help with Islamic content verification
+        - label: I can assist with translation/localization
+        - label: I prefer to just suggest the idea
+
+  - type: checkboxes
+    id: islamic-compliance
+    attributes:
+      label: Islamic Compliance
+      description: Please confirm that this feature request aligns with Islamic principles
+      options:
+        - label: This feature aligns with Islamic principles and values
+          required: true
+        - label: This feature respects the sanctity of the Quran and Islamic teachings
+          required: true
+        - label: This feature would benefit the Muslim Ummah
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## 🤲 Closing Dua
+        
+        **وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ**
+        
+        *"And for this let the competitors compete."* (Quran 83:26)
+        
+        May Allah (SWT) bless your suggestion and make it a means of benefit for the Ummah. جزاك الله خيراً!
+        
+        ---

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Hikmah Academy - Quran Section</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+    <meta name="description" content="Al-Hikmah Academy Quran section with Arabic text, translations, and audio recitation">
+    <meta name="keywords" content="Quran, Islam, Arabic, Translation, Audio, Recitation, Al-Hikmah Academy">
+    <meta name="author" content="Al-Hikmah Academy">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Al-Hikmah Academy - Quran Section">
+    <meta property="og:description" content="Complete Quran with Arabic text, English & Urdu translations, and audio recitation">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/2e7d32/ffffff?text=Al-Hikmah+Academy+Quran">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Al-Hikmah Academy - Quran Section">
+    <meta name="twitter:description" content="Complete Quran with Arabic text, translations, and audio recitation">
+    <meta name="twitter:image" content="https://via.placeholder.com/1200x630/2e7d32/ffffff?text=Al-Hikmah+Academy+Quran">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="academy-title">
+                    <i class="fas fa-mosque"></i>
+                    Al-Hikmah Academy
+                </h1>
+                <h2 class="section-title">القرآن الكريم - The Noble Quran</h2>
+            </div>
+        </header>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="controls-container">
+                <!-- Surah Selector -->
+                <div class="control-group">
+                    <label for="surah-select" class="control-label">
+                        <i class="fas fa-book-open"></i>
+                        Select Surah
+                    </label>
+                    <select id="surah-select" class="surah-selector">
+                        <option value="">Choose a Surah...</option>
+                    </select>
+                </div>
+
+                <!-- Translation Toggle -->
+                <div class="control-group">
+                    <label class="control-label">
+                        <i class="fas fa-language"></i>
+                        Translation
+                    </label>
+                    <div class="translation-toggle">
+                        <button class="toggle-btn active" data-mode="arabic">Arabic Only</button>
+                        <button class="toggle-btn" data-mode="english">Arabic + English</button>
+                        <button class="toggle-btn" data-mode="urdu">Arabic + Urdu</button>
+                    </div>
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="control-group">
+                    <label class="control-label">
+                        <i class="fas fa-volume-up"></i>
+                        Audio Player
+                    </label>
+                    <div class="audio-controls">
+                        <button id="play-all-btn" class="audio-btn" disabled>
+                            <i class="fas fa-play"></i>
+                            Play All
+                        </button>
+                        <button id="stop-audio-btn" class="audio-btn">
+                            <i class="fas fa-stop"></i>
+                            Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state hidden">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <p>Loading Quran data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="error-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error Loading Data</h3>
+                <p id="error-message">Unable to load Quran data. Please try again.</p>
+                <button id="retry-btn" class="retry-btn">
+                    <i class="fas fa-redo"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+
+        <!-- Surah Information -->
+        <section id="surah-info" class="surah-info hidden">
+            <div class="surah-header">
+                <h2 id="surah-name-arabic" class="surah-name-arabic"></h2>
+                <h3 id="surah-name-english" class="surah-name-english"></h3>
+                <div class="surah-meta">
+                    <span id="surah-type" class="surah-type"></span>
+                    <span id="surah-verses" class="surah-verses"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verses Container -->
+        <section id="verses-container" class="verses-container hidden">
+            <div id="verses-list" class="verses-list">
+                <!-- Verses will be dynamically populated here -->
+            </div>
+        </section>
+
+        <!-- Global Audio Player -->
+        <div id="global-audio-player" class="global-audio-player hidden">
+            <div class="player-content">
+                <div class="now-playing">
+                    <span id="now-playing-text">Now Playing: Verse 1</span>
+                </div>
+                <div class="player-controls">
+                    <button id="prev-verse-btn" class="player-btn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button id="play-pause-btn" class="player-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button id="next-verse-btn" class="player-btn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="arabic-audio" preload="none"></audio>
+    <audio id="translation-audio" preload="none"></audio>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+name: 🌍 Translation Issue
+description: Report an issue with Quran translations or suggest translation improvements
+title: "[TRANSLATION]: "
+labels: ["translation", "content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🕌 Assalamu Alaikum!
+        
+        Thank you for helping us improve the translation quality in the Al-Hikmah Academy Quran section. Accurate translations are crucial for proper understanding of the Quran.
+        
+        **Note**: Please ensure you have Islamic knowledge or consult with qualified scholars when suggesting translation changes.
+
+  - type: dropdown
+    id: translation-language
+    attributes:
+      label: Translation Language
+      description: Which translation language is this issue about?
+      options:
+        - English
+        - Urdu
+        - Request for new language
+        - Multiple languages
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Type of Translation Issue
+      description: What type of translation issue are you reporting?
+      options:
+        - Incorrect translation
+        - Missing translation
+        - Unclear/confusing translation
+        - Cultural sensitivity concern
+        - Formatting/display issue
+        - Request for alternative translation source
+        - New language support request
+    validations:
+      required: true
+
+  - type: input
+    id: surah-verse
+    attributes:
+      label: Surah and Verse Reference
+      description: Please specify the Surah and verse number(s) where the issue occurs
+      placeholder: e.g., Surah Al-Fatiha (1), Verse 2 or Surah 2, Verses 1-5
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-translation
+    attributes:
+      label: Current Translation
+      description: Copy the current translation text that has the issue
+      placeholder: Paste the current translation here...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-translation
+    attributes:
+      label: Suggested Improvement
+      description: Provide your suggested translation or correction
+      placeholder: Your suggested translation or improvement...
+    validations:
+      required: false
+
+  - type: textarea
+    id: arabic-reference
+    attributes:
+      label: Arabic Text Reference
+      description: Include the Arabic text for reference (if relevant)
+      placeholder: Arabic text here...
+    validations:
+      required: false
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Justification
+      description: Explain why you believe this change is necessary. Include scholarly references if available.
+      placeholder: |
+        This translation should be changed because...
+        
+        References:
+        - Scholar/Source 1
+        - Scholar/Source 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: translation-source
+    attributes:
+      label: Preferred Translation Source
+      description: Do you have a preferred translation source or scholar?
+      options:
+        - Sahih International
+        - Yusuf Ali
+        - Pickthall
+        - Dr. Mustafa Khattab (The Clear Quran)
+        - Muhammad Asad
+        - Tafsir Ibn Kathir
+        - Local scholar consultation needed
+        - Other (specify in comments)
+        - No preference
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scholarly-verification
+    attributes:
+      label: Scholarly Verification
+      description: Please confirm your qualification or verification process
+      options:
+        - label: I have Islamic studies background/qualification
+        - label: I have consulted with a qualified Islamic scholar
+        - label: I have cross-referenced with authentic sources
+        - label: I am a native speaker of the target language
+        - label: This is based on general observation (will need scholar verification)
+
+  - type: textarea
+    id: cultural-context
+    attributes:
+      label: Cultural Context
+      description: Is there any cultural context that should be considered for this translation?
+      placeholder: Cultural considerations...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency Level
+      description: How urgent is this translation correction?
+      options:
+        - Low - Minor improvement
+        - Medium - Affects understanding
+        - High - Potential misunderstanding
+        - Critical - Significant theological concern
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Additional Notes
+      description: Any additional information or context
+      placeholder: Additional context...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification Checklist
+      description: Please confirm the following
+      options:
+        - label: I have verified this issue exists in the current application
+          required: true
+        - label: I understand that translation changes require scholarly review
+          required: true
+        - label: This suggestion aligns with authentic Islamic teachings
+          required: true
+        - label: I am willing to provide additional clarification if needed
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## 🤲 Important Note
+        
+        **Translation Verification Process:**
+        All translation suggestions will be reviewed by qualified Islamic scholars before implementation. We appreciate your patience in this important process.
+        
+        **رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا**
+        
+        *"Our Lord, do not impose blame upon us if we have forgotten or erred."* (Quran 2:286)
+        
+        جزاك الله خيراً for helping improve the accuracy of Quran translations!
+        
+        ---

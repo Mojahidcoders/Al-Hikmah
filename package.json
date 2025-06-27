@@ -1,0 +1,48 @@
+{
+  "name": "al-hikmah-academy-quran",
+  "version": "1.0.0",
+  "description": "A comprehensive Quran section for Al-Hikmah Academy website with Arabic text, translations, and audio recitation",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "install-deps": "npm install",
+    "build": "echo 'No build step required for this project'",
+    "test": "node test-installation.js",
+    "verify": "node test-installation.js"
+  },
+  "keywords": [
+    "quran",
+    "islamic",
+    "education",
+    "arabic",
+    "translation",
+    "audio",
+    "recitation",
+    "urdu",
+    "english"
+  ],
+  "author": "Al-Hikmah Academy",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/al-hikmah-academy/quran-section.git"
+  },
+  "bugs": {
+    "url": "https://github.com/al-hikmah-academy/quran-section/issues"
+  },
+  "homepage": "https://github.com/al-hikmah-academy/quran-section#readme"
+}
