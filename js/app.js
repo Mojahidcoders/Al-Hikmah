@@ -22,10 +22,10 @@ class QuranApp {
             this.baseURL = window.location.origin;
             this.apiEndpoints = {
                 surahs: `${this.baseURL}/api/surahs`,
-                arabic: (number) => `${this.baseURL}/api/surah/${number}/arabic`,
-                english: (number) => `${this.baseURL}/api/surah/${number}/english`,
-                urdu: (number) => `${this.baseURL}/api/surah/${number}/urdu`,
-                audio: (ayahNumber) => `${this.baseURL}/api/audio/${ayahNumber}`,
+                arabic: (number) => `${this.baseURL}/api/surah?number=${number}&language=arabic`,
+                english: (number) => `${this.baseURL}/api/surah?number=${number}&language=english`,
+                urdu: (number) => `${this.baseURL}/api/surah?number=${number}&language=urdu`,
+                audio: (ayahNumber) => `${this.baseURL}/api/audio?ayahNumber=${ayahNumber}`,
                 health: `${this.baseURL}/api/health`
             };
         } else {
