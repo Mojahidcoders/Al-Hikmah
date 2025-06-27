@@ -5,7 +5,15 @@ class QuranApp {
         this.currentTranslationMode = 'arabic';
         this.verses = [];
         this.isPlaying = false;
-        this.currentPlayingVerse = null;
+        this            this.verses = this.currentSurah.arabic.ayahs.map((ayah, index) => ({
+                number: ayah.numberInSurah,
+                arabic: ayah.text,
+                english: this.currentSurah.english.ayahs[index]?.text || 'Translation not available',
+                urdu: this.currentSurah.urdu.ayahs[index]?.text || 'اردو ترجمہ دستیاب نہیں',
+                audioUrl: typeof this.apiEndpoints.audio === 'function' 
+                    ? this.apiEndpoints.audio(ayah.number) 
+                    : this.apiEndpoints.audio.replace('${ayahNumber}', ayah.number)
+            }));tPlayingVerse = null;
         this.audioQueue = [];
         this.currentAudioIndex = 0;
         
@@ -29,15 +37,15 @@ class QuranApp {
                 health: `${this.baseURL}/api/health`
             };
         } else {
-            // Production - use Vercel backend
-            this.baseURL = 'https://al-hikmah-9v7m.vercel.app';
+            // Production - use direct Quran API as fallback
+            this.baseURL = '';
             this.apiEndpoints = {
-                surahs: `${this.baseURL}/api/surahs`,
-                arabic: (number) => `${this.baseURL}/api/surah?number=${number}&language=arabic`,
-                english: (number) => `${this.baseURL}/api/surah?number=${number}&language=english`,
-                urdu: (number) => `${this.baseURL}/api/surah?number=${number}&language=urdu`,
-                audio: (ayahNumber) => `${this.baseURL}/api/audio?ayahNumber=${ayahNumber}`,
-                health: `${this.baseURL}/api/health`
+                surahs: 'https://api.alquran.cloud/v1/meta',
+                arabic: (number) => `https://api.alquran.cloud/v1/surah/${number}`,
+                english: (number) => `https://api.alquran.cloud/v1/surah/${number}/en.asad`,
+                urdu: (number) => `https://api.alquran.cloud/v1/surah/${number}/ur.jalandhry`,
+                audio: (ayahNumber) => `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber}.mp3`,
+                health: '/api/health'
             };
         }
         
