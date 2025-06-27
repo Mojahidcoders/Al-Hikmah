@@ -346,42 +346,20 @@ class QuranApp {
         try {
             this.showLoading('Loading Surah list...');
             
-            let data;
-            
-            // In production, prioritize static data for reliability
-            if (!this.isLocal) {
-                console.log('🔧 Production mode: Using static Surah data for reliability');
-                data = this.getStaticSurahData();
-            } else {
-                // Local development: try API first, fallback to static
-                try {
-                    data = await this.fetchWithFallback(this.apiEndpoints.surahs);
-                } catch (apiError) {
-                    console.warn('All APIs failed, using static data:', apiError.message);
-                    data = this.getStaticSurahData();
-                }
-            }
+            // Always use static data for maximum reliability
+            console.log('🔧 Using static Surah data for maximum reliability');
+            const data = this.getStaticSurahData();
             
             const surahSelect = document.getElementById('surah-select');
+            if (!surahSelect) {
+                throw new Error('Surah select element not found');
+            }
             
-            // Clear existing options except the first one
+            // Clear existing options
             surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
             
-            // Handle different data formats
-            let surahs;
-            if (data && data.data && data.data.surahs && data.data.surahs.references) {
-                // Static data format (both local and production when using static)
-                surahs = data.data.surahs.references;
-            } else if (data && data.data && Array.isArray(data.data)) {
-                // Direct AlQuran.cloud API format
-                surahs = data.data.map(surah => ({
-                    number: surah.number,
-                    name: surah.name,
-                    englishName: surah.englishName
-                }));
-            } else {
-                throw new Error('Invalid data structure received from API');
-            }
+            // Get surahs from static data
+            const surahs = data.data.surahs.references;
             
             if (surahs && surahs.length > 0) {
                 surahs.forEach(surah => {
@@ -390,22 +368,37 @@ class QuranApp {
                     option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
                     surahSelect.appendChild(option);
                 });
-                console.log(`✅ Loaded ${surahs.length} Surahs`);
+                console.log(`✅ Successfully loaded ${surahs.length} Surahs from static data`);
             } else {
-                throw new Error('No Surahs found in API response');
+                throw new Error('No Surahs found in static data');
             }
             
             this.hideLoading();
         } catch (error) {
             console.error('❌ Error loading Surah list:', error);
-            const environment = window.location.hostname === 'localhost' ? 'Local' : 'Production';
-            const dataSource = !this.isLocal ? 'Static Data' : `API endpoint: ${this.apiEndpoints.surahs}`;
-            const errorMessage = `Failed to load Surah list: ${error.message}. 
-                                  Data source: ${dataSource}
-                                  Environment: ${environment}`;
-            this.showError(errorMessage, () => {
-                this.loadSurahList();
-            });
+            
+            // Emergency fallback: create basic surah list manually
+            console.log('🚨 Using emergency fallback Surah list');
+            const surahSelect = document.getElementById('surah-select');
+            if (surahSelect) {
+                surahSelect.innerHTML = `
+                    <option value="">Choose a Surah...</option>
+                    <option value="1">1. الفاتحة - Al-Fatiha</option>
+                    <option value="2">2. البقرة - Al-Baqarah</option>
+                    <option value="3">3. آل عمران - Ali 'Imran</option>
+                    <option value="4">4. النساء - An-Nisa</option>
+                    <option value="5">5. المائدة - Al-Ma'idah</option>
+                    <option value="18">18. الكهف - Al-Kahf</option>
+                    <option value="36">36. يس - Ya-Sin</option>
+                    <option value="55">55. الرحمن - Ar-Rahman</option>
+                    <option value="67">67. الملك - Al-Mulk</option>
+                    <option value="112">112. الإخلاص - Al-Ikhlas</option>
+                `;
+                console.log('✅ Emergency fallback Surah list loaded');
+            }
+            
+            this.hideLoading();
+            this.showError('Surah list loaded with basic options. Full list may be unavailable.', null);
         }
     }
 
