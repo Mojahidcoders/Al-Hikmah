@@ -29,24 +29,15 @@ class QuranApp {
                 health: `${this.baseURL}/api/health`
             };
         } else {
-            // Production - use Vercel API with fallback to direct Quran API
-            this.baseURL = window.location.origin;
+            // Production - use direct Quran API (Vercel API endpoints have deployment issues)
+            this.baseURL = '';
             this.apiEndpoints = {
-                surahs: `${this.baseURL}/api/surahs`,
-                arabic: (number) => `${this.baseURL}/api/surah?number=${number}&language=arabic`,
-                english: (number) => `${this.baseURL}/api/surah?number=${number}&language=english`,
-                urdu: (number) => `${this.baseURL}/api/surah?number=${number}&language=urdu`,
-                audio: (ayahNumber) => `${this.baseURL}/api/audio?ayahNumber=${ayahNumber}`,
-                health: `${this.baseURL}/api/health`
-            };
-            
-            // Fallback API endpoints for direct Quran API
-            this.fallbackEndpoints = {
                 surahs: 'https://api.alquran.cloud/v1/meta',
                 arabic: (number) => `https://api.alquran.cloud/v1/surah/${number}`,
                 english: (number) => `https://api.alquran.cloud/v1/surah/${number}/en.asad`,
                 urdu: (number) => `https://api.alquran.cloud/v1/surah/${number}/ur.jalandhry`,
-                audio: (ayahNumber) => `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber}.mp3`
+                audio: (ayahNumber) => `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber}.mp3`,
+                health: 'https://api.alquran.cloud/v1/meta'
             };
         }
         
@@ -211,8 +202,26 @@ class QuranApp {
         try {
             this.showLoading('Loading Surah list...');
             
-            const fallbackUrl = this.fallbackEndpoints ? this.fallbackEndpoints.surahs : null;
-            const data = await this.fetchWithFallback(this.apiEndpoints.surahs, fallbackUrl);
+            console.log('🔗 Fetching Surah list from:', this.apiEndpoints.surahs);
+            
+            const response = await fetch(this.apiEndpoints.surahs, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('📡 Response status:', response.status, response.statusText);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Response error:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
+            
+            const data = await response.json();
+            console.log('✅ Surah data received:', data);
             
             const surahSelect = document.getElementById('surah-select');
             
@@ -221,8 +230,8 @@ class QuranApp {
             
             // Handle direct API response format
             let surahs;
-            if (data && data.data && data.data.surahs && data.data.surahs.references) {
-                // Our API format
+            if (this.isLocal && data && data.data && data.data.surahs && data.data.surahs.references) {
+                // Local API format
                 surahs = data.data.surahs.references;
             } else if (data && data.data && Array.isArray(data.data)) {
                 // Direct AlQuran.cloud API format
@@ -264,19 +273,31 @@ class QuranApp {
             this.showLoading(`Loading Surah ${surahNumber}...`);
             this.stopAllAudio();
             
-            // Helper function to get fallback URL
-            const getFallbackUrl = (apiType, number) => {
-                if (!this.fallbackEndpoints) return null;
-                return typeof this.fallbackEndpoints[apiType] === 'function' 
-                    ? this.fallbackEndpoints[apiType](number)
-                    : this.fallbackEndpoints[apiType];
+            // Fetch with proper headers and error handling
+            const fetchWithRetry = async (url, retries = 3) => {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        return await response.json();
+                    } catch (error) {
+                        if (i === retries - 1) throw error;
+                        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Progressive delay
+                    }
+                }
             };
             
             // Load Arabic text, English translation, and Urdu translation in parallel
             const [arabicData, englishData, urduData] = await Promise.all([
-                this.fetchWithFallback(this.apiEndpoints.arabic(surahNumber), getFallbackUrl('arabic', surahNumber)),
-                this.fetchWithFallback(this.apiEndpoints.english(surahNumber), getFallbackUrl('english', surahNumber)),
-                this.fetchWithFallback(this.apiEndpoints.urdu(surahNumber), getFallbackUrl('urdu', surahNumber))
+                fetchWithRetry(this.apiEndpoints.arabic(surahNumber)),
+                fetchWithRetry(this.apiEndpoints.english(surahNumber)),
+                fetchWithRetry(this.apiEndpoints.urdu(surahNumber))
             ]);
             
             this.currentSurah = {
@@ -293,9 +314,7 @@ class QuranApp {
                 urdu: this.currentSurah.urdu.ayahs[index]?.text || 'اردو ترجمہ دستیاب نہیں',
                 audioUrl: typeof this.apiEndpoints.audio === 'function' 
                     ? this.apiEndpoints.audio(ayah.number)
-                    : (this.fallbackEndpoints?.audio && typeof this.fallbackEndpoints.audio === 'function'
-                        ? this.fallbackEndpoints.audio(ayah.number)
-                        : `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah.number}.mp3`)
+                    : this.apiEndpoints.audio
             }));
             
             this.displaySurahInfo();
