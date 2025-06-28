@@ -342,64 +342,149 @@ class QuranApp {
         };
     }
 
+    // Static Quran data for popular Surahs when APIs fail
+    getStaticSurahContent(surahNumber) {
+        console.log(`📖 Getting static content for Surah ${surahNumber}`);
+        
+        const staticSurahs = {
+            1: { // Al-Fatiha
+                number: 1,
+                name: "الفاتحة",
+                englishName: "Al-Fatiha",
+                ayahs: [
+                    {
+                        numberInSurah: 1,
+                        text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                        english: "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
+                        urdu: "اللہ کے نام سے جو نہایت مہربان، رحم کرنے والا ہے"
+                    },
+                    {
+                        numberInSurah: 2,
+                        text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                        english: "[All] praise is [due] to Allah, Lord of the worlds -",
+                        urdu: "سب طرح کی تعریف اللہ ہی کو (سزاوار) ہے جو تمام مخلوقات کا پالنے والا ہے"
+                    },
+                    {
+                        numberInSurah: 3,
+                        text: "الرَّحْمَٰنِ الرَّحِيمِ",
+                        english: "The Entirely Merciful, the Especially Merciful,",
+                        urdu: "نہایت مہربان، رحم کرنے والا"
+                    },
+                    {
+                        numberInSurah: 4,
+                        text: "مَالِكِ يَوْمِ الدِّينِ",
+                        english: "Sovereign of the Day of Recompense.",
+                        urdu: "انصاف کے دن کا حاکم"
+                    },
+                    {
+                        numberInSurah: 5,
+                        text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+                        english: "It is You we worship and You we ask for help.",
+                        urdu: "ہم تیری ہی عبادت کرتے ہیں اور تجھی سے مدد چاہتے ہیں"
+                    },
+                    {
+                        numberInSurah: 6,
+                        text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+                        english: "Guide us to the straight path -",
+                        urdu: "ہمیں سیدھے رستے کی ہدایت کر"
+                    },
+                    {
+                        numberInSurah: 7,
+                        text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+                        english: "The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.",
+                        urdu: "ان لوگوں کا رستہ جن پر تو نے انعام کیا ہے، ان کا نہیں جن پر تیرا غضب نازل ہوا اور نہ (ان کا) جو بھٹک گئے"
+                    }
+                ]
+            },
+            112: { // Al-Ikhlas
+                number: 112,
+                name: "الإخلاص",
+                englishName: "Al-Ikhlas",
+                ayahs: [
+                    {
+                        numberInSurah: 1,
+                        text: "قُلْ هُوَ اللَّهُ أَحَدٌ",
+                        english: "Say, \"He is Allah, [who is] One,",
+                        urdu: "کہہ دو کہ وہ اللہ ایک ہے"
+                    },
+                    {
+                        numberInSurah: 2,
+                        text: "اللَّهُ الصَّمَدُ",
+                        english: "Allah, the Eternal Refuge.",
+                        urdu: "اللہ بے نیاز ہے"
+                    },
+                    {
+                        numberInSurah: 3,
+                        text: "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+                        english: "He neither begets nor is born,",
+                        urdu: "نہ اس کی کوئی اولاد ہے اور نہ وہ کسی کی اولاد ہے"
+                    },
+                    {
+                        numberInSurah: 4,
+                        text: "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
+                        english: "Nor is there to Him any equivalent.\"",
+                        urdu: "اور کوئی اس کا ہمسر نہیں"
+                    }
+                ]
+            }
+        };
+        
+        if (staticSurahs[surahNumber]) {
+            return {
+                data: staticSurahs[surahNumber]
+            };
+        } else {
+            throw new Error(`Static content not available for Surah ${surahNumber}. Only Al-Fatiha (1) and Al-Ikhlas (112) are available offline.`);
+        }
+    }
+
     async loadSurahList() {
         try {
-            this.showLoading('Loading Surah list...');
-            
-            // Always use static data for maximum reliability
-            console.log('🔧 Using static Surah data for maximum reliability');
-            const data = this.getStaticSurahData();
+            // Surah list is pre-populated in HTML for maximum reliability
+            console.log('✅ Surah list already available in HTML - no loading needed');
             
             const surahSelect = document.getElementById('surah-select');
             if (!surahSelect) {
                 throw new Error('Surah select element not found');
             }
             
-            // Clear existing options
-            surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
+            // Check if options are already loaded (should be 115 total: 1 default + 114 surahs)
+            const optionCount = surahSelect.options.length;
+            console.log(`✅ Found ${optionCount} options in Surah dropdown`);
             
-            // Get surahs from static data
-            const surahs = data.data.surahs.references;
+            if (optionCount >= 114) {
+                console.log('✅ All Surahs are available and ready to use');
+                this.hideLoading();
+                return;
+            } else {
+                console.log('⚠️ Not all Surahs found, using JavaScript fallback');
+                // Fallback to populate via JavaScript if HTML is missing
+                throw new Error('HTML Surah list incomplete');
+            }
             
-            if (surahs && surahs.length > 0) {
+        } catch (error) {
+            console.error('❌ Error with Surah list:', error);
+            
+            // Emergency fallback: create basic surah list manually
+            console.log('🚨 Using emergency JavaScript fallback');
+            const surahSelect = document.getElementById('surah-select');
+            if (surahSelect) {
+                // Get static data and populate
+                const data = this.getStaticSurahData();
+                surahSelect.innerHTML = '<option value="">Choose a Surah...</option>';
+                
+                const surahs = data.data.surahs.references;
                 surahs.forEach(surah => {
                     const option = document.createElement('option');
                     option.value = surah.number;
                     option.textContent = `${surah.number}. ${surah.name} - ${surah.englishName}`;
                     surahSelect.appendChild(option);
                 });
-                console.log(`✅ Successfully loaded ${surahs.length} Surahs from static data`);
-            } else {
-                throw new Error('No Surahs found in static data');
+                console.log(`✅ Emergency fallback loaded ${surahs.length} Surahs`);
             }
-            
-            this.hideLoading();
-        } catch (error) {
-            console.error('❌ Error loading Surah list:', error);
-            
-            // Emergency fallback: create basic surah list manually
-            console.log('🚨 Using emergency fallback Surah list');
-            const surahSelect = document.getElementById('surah-select');
-            if (surahSelect) {
-                surahSelect.innerHTML = `
-                    <option value="">Choose a Surah...</option>
-                    <option value="1">1. الفاتحة - Al-Fatiha</option>
-                    <option value="2">2. البقرة - Al-Baqarah</option>
-                    <option value="3">3. آل عمران - Ali 'Imran</option>
-                    <option value="4">4. النساء - An-Nisa</option>
-                    <option value="5">5. المائدة - Al-Ma'idah</option>
-                    <option value="18">18. الكهف - Al-Kahf</option>
-                    <option value="36">36. يس - Ya-Sin</option>
-                    <option value="55">55. الرحمن - Ar-Rahman</option>
-                    <option value="67">67. الملك - Al-Mulk</option>
-                    <option value="112">112. الإخلاص - Al-Ikhlas</option>
-                `;
-                console.log('✅ Emergency fallback Surah list loaded');
-            }
-            
-            this.hideLoading();
-            this.showError('Surah list loaded with basic options. Full list may be unavailable.', null);
         }
+        
+        this.hideLoading();
     }
 
     async loadSurah(surahNumber) {
@@ -407,49 +492,81 @@ class QuranApp {
             this.showLoading(`Loading Surah ${surahNumber}...`);
             this.stopAllAudio();
             
-            // Fetch with proper headers and error handling
-            const fetchWithRetry = async (url, retries = 3) => {
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        const response = await fetch(url, {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        return await response.json();
-                    } catch (error) {
-                        if (i === retries - 1) throw error;
-                        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Progressive delay
+            let surahData;
+            
+            // Try to use static data first for maximum reliability
+            try {
+                const staticData = this.getStaticSurahContent(surahNumber);
+                console.log(`✅ Using static data for Surah ${surahNumber}`);
+                
+                this.currentSurah = {
+                    number: surahNumber,
+                    arabic: staticData.data,
+                    english: staticData.data,
+                    urdu: staticData.data
+                };
+                
+                this.verses = staticData.data.ayahs.map((ayah, index) => ({
+                    number: ayah.numberInSurah,
+                    arabic: ayah.text,
+                    english: ayah.english || 'Translation not available',
+                    urdu: ayah.urdu || 'اردو ترجمہ دستیاب نہیں',
+                    audioUrl: null // Audio will be handled separately
+                }));
+                
+            } catch (staticError) {
+                console.warn(`Static data not available for Surah ${surahNumber}, trying API...`);
+                
+                // Fallback to API if static data not available
+                const fetchWithRetry = async (url, retries = 2) => {
+                    for (let i = 0; i < retries; i++) {
+                        try {
+                            const response = await fetch(url, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            return await response.json();
+                        } catch (error) {
+                            if (i === retries - 1) throw error;
+                            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                        }
                     }
+                };
+                
+                try {
+                    // Try API with reduced timeout
+                    const [arabicData, englishData, urduData] = await Promise.all([
+                        fetchWithRetry(this.apiEndpoints.arabic(surahNumber)),
+                        fetchWithRetry(this.apiEndpoints.english(surahNumber)),
+                        fetchWithRetry(this.apiEndpoints.urdu(surahNumber))
+                    ]);
+                    
+                    this.currentSurah = {
+                        number: surahNumber,
+                        arabic: arabicData.data,
+                        english: englishData.data,
+                        urdu: urduData.data
+                    };
+                    
+                    this.verses = this.currentSurah.arabic.ayahs.map((ayah, index) => ({
+                        number: ayah.numberInSurah,
+                        arabic: ayah.text,
+                        english: this.currentSurah.english.ayahs[index]?.text || 'Translation not available',
+                        urdu: this.currentSurah.urdu.ayahs[index]?.text || 'اردو ترجمہ دستیاب نہیں',
+                        audioUrl: typeof this.apiEndpoints.audio === 'function' 
+                            ? this.apiEndpoints.audio(ayah.number)
+                            : this.apiEndpoints.audio
+                    }));
+                    
+                } catch (apiError) {
+                    console.error('API also failed:', apiError);
+                    throw new Error(`Surah ${surahNumber} is not available offline. Please try Al-Fatiha (1) or Al-Ikhlas (112) which are available without internet connection.`);
                 }
-            };
-            
-            // Load Arabic text, English translation, and Urdu translation in parallel
-            const [arabicData, englishData, urduData] = await Promise.all([
-                fetchWithRetry(this.apiEndpoints.arabic(surahNumber)),
-                fetchWithRetry(this.apiEndpoints.english(surahNumber)),
-                fetchWithRetry(this.apiEndpoints.urdu(surahNumber))
-            ]);
-            
-            this.currentSurah = {
-                number: surahNumber,
-                arabic: arabicData.data,
-                english: englishData.data,
-                urdu: urduData.data
-            };
-            
-            this.verses = this.currentSurah.arabic.ayahs.map((ayah, index) => ({
-                number: ayah.numberInSurah,
-                arabic: ayah.text,
-                english: this.currentSurah.english.ayahs[index]?.text || 'Translation not available',
-                urdu: this.currentSurah.urdu.ayahs[index]?.text || 'اردو ترجمہ دستیاب نہیں',
-                audioUrl: typeof this.apiEndpoints.audio === 'function' 
-                    ? this.apiEndpoints.audio(ayah.number)
-                    : this.apiEndpoints.audio
-            }));
+            }
             
             this.displaySurahInfo();
             this.displayVerses();
@@ -460,7 +577,21 @@ class QuranApp {
             
         } catch (error) {
             console.error('Error loading Surah:', error);
-            this.showError(`Failed to load Surah ${surahNumber}. Please check your internet connection and try again.`, () => {
+            let errorMessage = `Failed to load Surah ${surahNumber}.`;
+            
+            if (error.message.includes('not available offline')) {
+                errorMessage = `Surah ${surahNumber} requires internet connection. 
+                
+Available offline:
+• Surah 1 (Al-Fatiha) 
+• Surah 112 (Al-Ikhlas)
+
+Please try one of these or check your internet connection.`;
+            } else {
+                errorMessage += ` Please check your internet connection and try again.`;
+            }
+            
+            this.showError(errorMessage, () => {
                 this.loadSurah(surahNumber);
             });
         }
